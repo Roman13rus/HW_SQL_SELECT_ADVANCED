@@ -16,17 +16,14 @@ GROUP BY a.album_name
 ORDER BY AVG(duration) DESC;
 
 --Все исполнители, которые не выпустили альбомы в 2020 году.
-SELECT DISTINCT name FROM Performer p
-JOIN Performeralbums pa ON p.performer_id = pa.performer_id
-LEFT JOIN Albums a ON a.album_id = pa.album_id AND EXTRACT(YEAR FROM a.year_of_release)=2020 
-WHERE a.album_id  IS NULL;
-
-----Все исполнители, которые не выпустили альбомы в 2020 году(Вариант 2)
-SELECT name from Performer p
-JOIN Performeralbums pa on p.performer_id = pa.performer_id
-JOIN Albums a ON a.album_id = pa.album_id 
-WHERE a.year_of_release NOT BETWEEN '20200101' AND '20201231' 
-GROUP BY p.name;
+SELECT name 
+FROM Performer p  
+WHERE p.name NOT IN ( 
+    SELECT p.name 
+    FROM Performer p 
+    JOIN performeralbums pa ON p.performer_id = pa.performer_id 
+    JOIN Albums a ON a.album_id = pa.album_id 
+    WHERE EXTRACT(YEAR FROM a.year_of_release)=2020); 
 
 --Названия сборников, в которых присутствует конкретный исполнитель (Poll Makkartney).
 SELECT collection_name FROM Сollection c
